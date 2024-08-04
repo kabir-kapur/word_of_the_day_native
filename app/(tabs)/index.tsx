@@ -1,15 +1,23 @@
-import { Image, StyleSheet, Button, View } from 'react-native';
-import { useState } from 'react';
+import { Image, StyleSheet, Button, View, ViewStyle, Animated } from 'react-native';
+import React, { useState, PropsWithChildren } from 'react';
 
 import { HelloWave } from '@/components/HelloWave';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 
+import { DictionaryEntry } from '@/model/DictionaryEntry';
+import { processColorsInProps } from 'react-native-reanimated/lib/typescript/reanimated2/Colors';
+
+import { FadeInView } from '@/components/FadeInView';
+
+type FadeInViewProps = PropsWithChildren<{style: ViewStyle}>;
+
 export default function HomeScreen() {  
   const [data, setData] = useState<DictionaryEntry>({name: "", definition: ""});
 
   function handleWod() {
+    // TODO: refactor this to @/handle folder later 
     const xhr = new XMLHttpRequest();
     xhr.open('GET', 'http://127.0.0.1:8000/words');
     xhr.onload = function() {
@@ -23,7 +31,7 @@ export default function HomeScreen() {
 
   return (
     <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
+      headerBackgroundColor={{ light: '#03694a', dark: '#01261b' }}
       headerImage={
         <Image
           source={require('@/assets/images/partial-react-logo.png')}
@@ -31,27 +39,30 @@ export default function HomeScreen() {
         />
       }>
       <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">The Word of the Day!</ThemedText>
         <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle" style={styles.wordOfTheDay}>Word Of The Day</ThemedText>
+        <ThemedText type="title">The Word of the Day!</ThemedText>
       </ThemedView>
       <View>
         <Button 
           title='WOD'
           onPress={handleWod}
+          color="#220126"
         />
       </View>
-      {data ? <ThemedText>{data.word}</ThemedText> : <ThemedText>Loading...</ThemedText>}
-      {data ? <ThemedText>{data.definition}</ThemedText> : <ThemedText>Loading...</ThemedText>}
+      <View>
+        { (data.word !== "" && data.definition !== "") ? <FadeInView
+          style={{
+            width: 250,
+            height: 100,
+            backgroundColor: 'powderblue',
+          }}>
+          <ThemedText>{data.word}</ThemedText>
+          <ThemedText>{data.definition}</ThemedText>
+        </FadeInView> : <View/>
+        }
+      </View>
     </ParallaxScrollView>
   );
-}
-
-interface DictionaryEntry {
-  word: string;
-  definition: string;
 }
 
 const styles = StyleSheet.create({
