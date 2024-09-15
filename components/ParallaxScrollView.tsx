@@ -66,6 +66,9 @@ const styles = StyleSheet.create({
   header: {
     height: 250,
     overflow: 'hidden',
+    borderRadius: 40,
+    borderWidth: .1,
+    borderColor: '#000000'
   },
   content: {
     flex: 1,
