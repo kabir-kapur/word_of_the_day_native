@@ -15,22 +15,25 @@ import { SpringInView } from '@/components/SpringInView';
 type FadeInViewProps = PropsWithChildren<{style: ViewStyle}>;
 
 export default function HomeScreen() {
-  const [data, setData] = useState<DictionaryEntry>({name: "", definition: ""});
+  const [data, setData] = useState<DictionaryEntry>({word: "", definition: ""});
+  // TODO: implement in handleWod fn to prevent repetitive calling of the GET API
+  const [hasCalledToday, setHasCalledToday] = useState<boolean>(false);
+  const [isClicked, setIsClicked] = useState<boolean>(false);
 
   function handleWod() {
     // TODO: refactor this to @/handle folder later
+    setIsClicked(true);
     const xhr = new XMLHttpRequest();
     xhr.open('GET', 'http://127.0.0.1:8000/words'); // performed synchronously -- blocking
     /* 
       fetching time right after completing synch request above should be accurate, 
       ONLY because the request is synchronous 
     */
-    const completeRequestTime = new Date();
-    console.log("completeRequestTime: " + completeRequestTime);
     xhr.onload = function() {
       if(xhr.status === 200) {
         console.log(JSON.parse(xhr.responseText));
         setData(JSON.parse(xhr.responseText));
+        
       } else {
         const error_msg = "Unable to receive valid WOD response."; 
         console.log(error_msg);
@@ -44,32 +47,19 @@ export default function HomeScreen() {
     <View style={styles.container}>
       <View style={styles.titleContainer}>
         <HelloWave />
-        <ThemedText type="title">gm to you pookie </ThemedText>
+        <ThemedText type="title">gmgmgmgmgmgm</ThemedText>
       </View>
-      <SpringInView style={{justifyContent:"center", alignItems: "center"}}>
-        <Text>
-          the mothefuckign text
-        </Text>
-      </SpringInView>
-      <View
-        style={styles.wodContainer}>
+      <View>
         { (data.word !== "" && data.definition !== "") ? 
-        <View> 
-          <FadeInView
-            // TODO: implement individual fade-in for WOD and definition
-            // link: https://trello.com/c/6j6Sam1O
-            style={styles.wodInternalTextContainerView}
-          >
-            <ThemedText>{data.word}</ThemedText>
-          </FadeInView>
-          <FadeInView
-            // TODO: implement individual fade-in for WOD and definition
-            // link: https://trello.com/c/6j6Sam1O
-            style={styles.wodInternalTextContainerView}
-          >
-            <ThemedText>{data.definition}</ThemedText>
-          </FadeInView>
-        </View> : <View/>
+          // adding styling to the below View will fuck up the 
+          // SpringInViews that it wraps
+          <View>  
+            <SpringInView
+              isClicked={isClicked}
+              text={{word: data.word, definition: data.definition}}
+              style={styles.wodInternalTextContainerViewSpringIn}
+            />
+          </View> : <View/>
         }
       </View>
       <View style={styles.wodPressableContainer}>
@@ -96,6 +86,7 @@ const styles = StyleSheet.create({
     flex: 1
   },
   wodContainer: {
+    backgroundColor: 'red',
     flex: 3, // Takes up most of the space in the center
     justifyContent: 'center',
     alignItems: 'center',
@@ -106,6 +97,10 @@ const styles = StyleSheet.create({
     height: 100,
     alignSelf: 'center',
     flexDirection: 'row',
+  },
+  wodInternalTextContainerViewSpringIn: {
+    justifyContent:"center",
+    alignItems: "center",
   },
   wodPressableContainer: {
     paddingBottom: 0,
@@ -126,4 +121,7 @@ const styles = StyleSheet.create({
     letterSpacing: 25,
     color: 'black',
   },
+  red: {
+    backgroundColor: 'red'
+  }
 });
