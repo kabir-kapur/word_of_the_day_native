@@ -22,25 +22,27 @@ export default function HomeScreen() {
 
   function handleWod() {
     // TODO: refactor this to @/handle folder later
-    setIsClicked(true);
-    const xhr = new XMLHttpRequest();
-    xhr.open('GET', 'http://127.0.0.1:8000/words'); // performed synchronously -- blocking
-    /* 
-      fetching time right after completing synch request above should be accurate, 
-      ONLY because the request is synchronous 
-    */
-    xhr.onload = function() {
-      if(xhr.status === 200) {
-        console.log(JSON.parse(xhr.responseText));
-        setData(JSON.parse(xhr.responseText));
-        
-      } else {
-        const error_msg = "Unable to receive valid WOD response."; 
-        console.log(error_msg);
-        setData({"error_msg": error_msg}); // figure out typing here
+    if (!isClicked){
+      setIsClicked(true);
+      const xhr = new XMLHttpRequest();
+      xhr.open('GET', 'http://127.0.0.1:8000/words'); // performed synchronously -- blocking
+      /* 
+        fetching time right after completing synch request above should be accurate, 
+        ONLY because the request is synchronous 
+      */
+      xhr.onload = function() {
+        if(xhr.status === 200) {
+          console.log(JSON.parse(xhr.responseText));
+          setData(JSON.parse(xhr.responseText));
+          
+        } else {
+          const error_msg = "Unable to receive valid WOD response."; 
+          console.log(error_msg);
+          setData({"error_msg": error_msg}); // figure out typing here
+        }
       }
+      xhr.send();
     }
-    xhr.send();
   }
 
   return (
@@ -93,6 +95,7 @@ const styles = StyleSheet.create({
     marginVertical: 20, // Adds spacing from top and bottom components
   },
   wodInternalTextContainerView: {
+    backgroundColor: 'yellow', 
     width: 250,
     height: 100,
     alignSelf: 'center',
@@ -120,6 +123,13 @@ const styles = StyleSheet.create({
     fontWeight: 'ultralight',
     letterSpacing: 25,
     color: 'black',
+  },
+  wodOuterContainer: {
+    backgroundColor: 'yellow', 
+    width: 500,
+    height: 100,
+    alignSelf: 'center',
+    flexDirection: 'row',
   },
   red: {
     backgroundColor: 'red'
